@@ -15,14 +15,12 @@ const dataPlayer = [
     score: 0,
     current: 0,
     isActive: true,
-    isFinish: false,
   },
   {
     id: 2,
     score: 0,
     current: 0,
     isActive: false,
-    isFinish: false,
   },
 ];
 
@@ -32,18 +30,23 @@ const App = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [dice, setDice] = useState(0);
   const [player, setPlayer] = useState(dataPlayer);
+  const [isFinish, setIsFinish] = useState(false);
 
   const onStartRollDice = () => {
-    setIsPlaying(true);
-    const random = Math.trunc(Math.random() * 6) + 1;
+    if (!isFinish) {
+      setIsPlaying(true);
+      const random = Math.trunc(Math.random() * 6) + 1;
 
-    if (random === 1) {
-      checkWhenOne();
-      console.log('<< random >>: ', player);
+      if (random === 1) {
+        checkWhenOne();
+        console.log('<< random >>: ', random);
+      }
+
+      addCurrent(random);
+      setDice(random);
     }
 
-    addCurrent(random);
-    setDice(random);
+    endGame();
   };
 
   // add current
@@ -78,12 +81,25 @@ const App = () => {
   };
 
   // switch when dice = 1
-  const checkWhenOne = () => {};
+  const checkWhenOne = () => {
+    console.log('Перехід');
+  };
 
   // new game
   const onNewGame = () => {
     setIsPlaying(false);
+    setIsFinish(false);
     setPlayer(dataPlayer);
+  };
+
+  // end game
+  const endGame = () => {
+    const newPlayer = player.filter(item => item.score >= 20);
+    if (newPlayer.length) {
+      setIsFinish(true);
+      setDice(0);
+      setIsPlaying(false);
+    }
   };
 
   return (

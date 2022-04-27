@@ -8,6 +8,7 @@ import icon4 from './components/img/dice-5.png';
 import icon5 from './components/img/dice-6.png';
 import PlayersView from './components/PlayersView';
 import ViewDice from './components/ViewDice';
+import { TERM } from './components/ItemPlayer';
 
 const dataPlayer = [
   {
@@ -27,9 +28,12 @@ const dataPlayer = [
 const myIMG = [icon0, icon1, icon2, icon3, icon4, icon5];
 
 const App = () => {
+  // show dice
   const [isPlaying, setIsPlaying] = useState(false);
   const [dice, setDice] = useState(0);
+  // our players
   const [player, setPlayer] = useState(dataPlayer);
+  // start and finish game
   const [isFinish, setIsFinish] = useState(false);
 
   const onStartRollDice = () => {
@@ -37,15 +41,16 @@ const App = () => {
       setIsPlaying(true);
       const random = Math.trunc(Math.random() * 6) + 1;
 
+      // move to another player
       if (random === 1) {
         checkWhenOne();
-        console.log('<< random >>: ', random);
+        setDice(random);
+      } else {
+        addCurrent(random);
+        setDice(random);
       }
-
-      addCurrent(random);
-      setDice(random);
     }
-
+    // end game, when will be TERM(20)
     endGame();
   };
 
@@ -59,8 +64,11 @@ const App = () => {
 
   // hold button
   const rememberData = () => {
-    checkIsActive();
-    setIsPlaying(false);
+    if (!isFinish) {
+      checkIsActive();
+      setIsPlaying(false);
+    }
+    endGame();
   };
 
   // check isActive
@@ -82,7 +90,17 @@ const App = () => {
 
   // switch when dice = 1
   const checkWhenOne = () => {
-    console.log('Перехід');
+    const newPlayer = player.map(item =>
+      item.isActive === true
+        ? {
+            ...item,
+            isActive: !item.isActive,
+            current: 0,
+          }
+        : { ...item, isActive: !item.isActive, current: 0 }
+    );
+    setPlayer(newPlayer);
+    setDice(0);
   };
 
   // new game
@@ -94,7 +112,7 @@ const App = () => {
 
   // end game
   const endGame = () => {
-    const newPlayer = player.filter(item => item.score >= 20);
+    const newPlayer = player.filter(item => item.score >= TERM);
     if (newPlayer.length) {
       setIsFinish(true);
       setDice(0);

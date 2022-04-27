@@ -1,11 +1,13 @@
 import React from 'react';
 
+export const TERM = 20;
+
 const ItemPlayer = props => {
   const { id, score, current, isActive } = props.data;
 
   const active = isActive ? 'player--active' : '';
 
-  const finish = score >= 20 ? 'player--winner' : '';
+  const finish = score >= TERM ? 'player--winner' : '';
 
   return (
     <section className={`player player--${id} ${active} ${finish}`}>

@@ -2,8 +2,8 @@ import React from 'react';
 
 export const TERM = 20;
 
-const ItemPlayer = props => {
-  const { id, score, current, isActive } = props.data;
+const Player = ({ player }) => {
+  const { id, score, current, isActive } = player;
 
   const active = isActive ? 'player--active' : '';
 
@@ -27,4 +27,4 @@ const ItemPlayer = props => {
   );
 };
 
-export default ItemPlayer;
+export default Player;

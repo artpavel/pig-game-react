@@ -1,12 +1,13 @@
 import React from 'react';
-import ItemPlayer from './ItemPlayer';
+import ItemPlayer from './Player';
 
-const PlayerView = ({ dataPlayer }) => {
-  const viewPlayers = dataPlayer.map(item => (
-    <ItemPlayer key={item.id} data={item} />
-  ));
+const PlayersView = ({ players }) => (
+  <>
+    {players.map(item => (
+      <ItemPlayer key={item.id} player={item} />
+    ))}
+  </>
+);
 
-  return <>{viewPlayers}</>;
-};
 
-export default PlayerView;
+export default PlayersView;

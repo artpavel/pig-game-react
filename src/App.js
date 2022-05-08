@@ -8,9 +8,9 @@ import icon4 from './components/img/dice-5.png';
 import icon5 from './components/img/dice-6.png';
 import PlayersView from './components/PlayersView';
 import ViewDice from './components/ViewDice';
-import { TERM } from './components/ItemPlayer';
+import { TERM } from './components/Player';
 
-const dataPlayer = [
+const initialPlayers = [
   {
     id: 1,
     score: 0,
@@ -32,34 +32,36 @@ const App = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [dice, setDice] = useState(0);
   // our players
-  const [player, setPlayer] = useState(dataPlayer);
+  const [players, setPlayer] = useState(initialPlayers);
   // start and finish game
   const [isFinish, setIsFinish] = useState(false);
 
   const onStartRollDice = () => {
-    if (!isFinish) {
-      setIsPlaying(true);
-      const random = Math.trunc(Math.random() * 6) + 1;
-
-      // move to another player
-      if (random === 1) {
-        checkWhenOne();
-        setDice(random);
-      } else {
-        addCurrent(random);
-        setDice(random);
-      }
+    if (isFinish) {
+      // end game, when will be TERM(20)
+      endGame();
+      return;
     }
-    // end game, when will be TERM(20)
-    endGame();
+
+    setIsPlaying(true);
+    const random = Math.trunc(Math.random() * 6) + 1;
+
+    // move to another players
+    if (random === 1) {
+      checkWhenOne();
+      setDice(random);
+    } else {
+      addCurrent(random);
+      setDice(random);
+    }
   };
 
   // add current
   const addCurrent = val => {
-    const newPlayer = player.map(item =>
-      item.isActive === true ? { ...item, current: item.current + val } : item
+    const updatedPlayers = players.map(item =>
+      item.isActive ? { ...item, current: item.current + val } : item
     );
-    setPlayer(newPlayer);
+    setPlayer(updatedPlayers);
   };
 
   // hold button
@@ -73,25 +75,25 @@ const App = () => {
 
   // check isActive
   const checkIsActive = () => {
-    setPlayer(
-      player.map(item =>
-        item.isActive === true
-          ? {
-              ...item,
-              isActive: !item.isActive,
-              score: item.score + item.current,
-              current: 0,
-            }
-          : { ...item, isActive: !item.isActive }
-      )
-    );
+    const updatedPlayers = players.map(item =>
+      item.isActive
+        ? {
+          ...item,
+          isActive: !item.isActive,
+          score: item.score + item.current,
+          current: 0,
+        }
+        : { ...item, isActive: !item.isActive }
+    )
+
+    setPlayer(updatedPlayers);
     setDice(0);
   };
 
   // switch when dice = 1
   const checkWhenOne = () => {
-    const newPlayer = player.map(item =>
-      item.isActive === true
+    const updatedPlayers = players.map(item =>
+      item.isActive
         ? {
             ...item,
             isActive: !item.isActive,
@@ -99,7 +101,7 @@ const App = () => {
           }
         : { ...item, isActive: !item.isActive, current: 0 }
     );
-    setPlayer(newPlayer);
+    setPlayer(updatedPlayers);
     setDice(0);
   };
 
@@ -107,13 +109,13 @@ const App = () => {
   const onNewGame = () => {
     setIsPlaying(false);
     setIsFinish(false);
-    setPlayer(dataPlayer);
+    setPlayer(initialPlayers);
   };
 
   // end game
   const endGame = () => {
-    const newPlayer = player.filter(item => item.score >= TERM);
-    if (newPlayer.length) {
+    const newPlayers = players.filter(item => item.score >= TERM);
+    if (newPlayers.length) {
       setIsFinish(true);
       setDice(0);
       setIsPlaying(false);
@@ -122,7 +124,7 @@ const App = () => {
 
   return (
     <main>
-      <PlayersView dataPlayer={player} />
+      <PlayersView players={players} />
       <ViewDice
         img={myIMG[`${dice - 1}`]}
         isPlaying={isPlaying}
